@@ -1,13 +1,12 @@
 
 package com.sample.wishlistDemo.api.generated;
 
-import javax.inject.Singleton;
-import javax.ws.rs.core.Response;
-
+import com.sample.wishlistDemo.JerseyApplication;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.sample.wishlistDemo.api.generated.WishlistItem;
-import com.sample.wishlistDemo.api.generated.YaasAwareParameters;
+import javax.inject.Singleton;
+import javax.ws.rs.core.Response;
 
 /**
 * Resource class containing the custom logic. Please put your logic here!
@@ -16,14 +15,17 @@ import com.sample.wishlistDemo.api.generated.YaasAwareParameters;
 @Singleton
 public class DefaultWishlistsResource implements com.sample.wishlistDemo.api.generated.WishlistsResource
 {
-	@javax.ws.rs.core.Context
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(JerseyApplication.class);
+
+    @javax.ws.rs.core.Context
 	private javax.ws.rs.core.UriInfo uriInfo;
 
 	/* GET / */
 	@Override
 	public Response get(final YaasAwareParameters yaasAware)
 	{
-		// place some logic here
+        LOG.info("hello");
+        // place some logic here
 		return Response.ok()
 			.entity(new java.util.ArrayList<Wishlist>()).build();
 	}
@@ -79,8 +81,7 @@ public class DefaultWishlistsResource implements com.sample.wishlistDemo.api.gen
 	Response postByWishlistIdWishlistItems(final YaasAwareParameters yaasAware,
 			final java.lang.String wishlistId, final WishlistItem wishlistItem){
 		// place some logic here
-		return Response.noContent()
-					.build();
+		return Response.created(uriInfo.getAbsolutePath()).build();
 	}
 
 }

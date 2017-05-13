@@ -1,12 +1,12 @@
 package com.sample.wishlistDemo.api.generated;
 
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Assert;
 import org.junit.Test;
+
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 
 public final class DefaultWishlistsResourceTest extends com.sample.wishlistDemo.api.generated.AbstractResourceTest
@@ -84,6 +84,27 @@ public final class DefaultWishlistsResourceTest extends com.sample.wishlistDemo.
 		Assert.assertNotNull("Response must not be null", response);
 		Assert.assertEquals("Response does not have expected response code", Status.NO_CONTENT.getStatusCode(), response.getStatus());
 	}
+
+    @Test
+    public void testGetByWishlistIdWishlistItems()
+    {
+        final WebTarget target = getRootTarget(ROOT_RESOURCE_PATH).path("/wishlistId/wishlistItems");
+        final Response response = target.request().get();
+        Assert.assertNotNull("Response must not be null", response);
+        Assert.assertEquals("Response does not have expected response code", Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testPostByWishlistIdWishlistItemsWithWishlistItem()
+    {
+        final WebTarget target = getRootTarget(ROOT_RESOURCE_PATH).path("/wishlistId/wishlistItems");
+        final WishlistItem entityBody = new WishlistItem();
+        final javax.ws.rs.client.Entity<WishlistItem> entity =
+                javax.ws.rs.client.Entity.entity(entityBody,"application/json");
+        final Response response = target.request().post(entity);
+        Assert.assertNotNull("Response must not be null", response);
+        Assert.assertEquals("Response does not have expected response code", Status.CREATED.getStatusCode(), response.getStatus());
+    }
 
 	@Override
 	protected ResourceConfig configureApplication()
