@@ -11,8 +11,8 @@ schemas:
   - wishlistItems: !include schemas/wishlistItems.json
   - error: !include https://api.yaas.io/patterns/v1/schema-error-message.json
 
-traits: 
-  - !include https://api.yaas.io/patterns/v2/trait-paged.yaml
+traits:
+  - !include https://api.yaas.io/patterns/v2/trait-yaas-aware.yaml
 
 resourceTypes: 
   - !include https://api.yaas.io/patterns/v2/resource-type-element.yaml
@@ -23,7 +23,6 @@ resourceTypes:
   is: [yaasAware]
   get:
     description: Gets all wishlists
-    is: [paged]
     responses:
       200:
         body:
@@ -65,7 +64,6 @@ resourceTypes:
       is: [yaasAware]
       get:
         description: Gets all wishlist items
-        is: [paged]
         responses:
           200:
             body:
