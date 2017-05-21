@@ -1,7 +1,6 @@
 
 package com.sample.wishlistDemo.api.generated;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sample.wishlistDemo.utils.RestClient;
@@ -30,20 +29,7 @@ public class DefaultWishlistsResource implements com.sample.wishlistDemo.api.gen
     /* GET / */
 	@Override
 	public Response get(final YaasAwareParameters yaasAware) {
-        try {
-            String token = rest.viewToken();
-            LOG.debug(token);
-            Map<String, String> map = mapper.readValue(token, new TypeReference<Map<String, String>>() {
-            });
-            LOG.debug(map.toString());
-            String accessToken = map.get("access_token");
-            String foo = rest.foo(accessToken);
-            LOG.debug(foo);
-            return Response.ok()
-                    .entity(new java.util.ArrayList<Wishlist>()).build();
-        } catch (IOException e) {
-            return Response.serverError().entity(e).build();
-        }
+        return Response.ok().entity(new Wishlist()).build();
     }
 
 	/* POST / */
@@ -51,42 +37,44 @@ public class DefaultWishlistsResource implements com.sample.wishlistDemo.api.gen
 	public Response post(final YaasAwareParameters yaasAware, final Wishlist wishlist)
 	{
         try {
-            LOG.debug(mapper.writeValueAsString(wishlist));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            String token = rest.manageToken();
+            LOG.debug(token);
+            Map<String, String> map = mapper.readValue(token, new TypeReference<Map<String, String>>() {
+            });
+            LOG.debug(map.toString());
+            String accessToken = map.get("access_token");
+            String result = rest.createWishlist(mapper.writeValueAsString(wishlist), accessToken);
+            LOG.debug(result);
+            return Response.created(uriInfo.getAbsolutePath()).entity(result).build();
+        } catch (IOException e) {
+            return Response.serverError().entity(e).build();
         }
-//        try {
-//            String token = rest.manageToken();
-//            LOG.debug(token);
-//            Map<String, String> map = mapper.readValue(token, new TypeReference<Map<String, String>>() {
-//            });
-//            LOG.debug(map.toString());
-//            String accessToken = map.get("access_token");
-//            String result = rest.createWishlist(mapper.writeValueAsString(wishlist), accessToken);
-//            LOG.debug(result);
-            return Response.created(uriInfo.getAbsolutePath())
-                    .build();
-//        } catch (IOException e) {
-//            return Response.serverError().entity(e).build();
-//        }
     }
 
 	/* GET /{wishlistId} */
 	@Override
 	public Response getByWishlistId(final YaasAwareParameters yaasAware, final java.lang.String wishlistId)
 	{
-		// place some logic here
-		return Response.ok()
-                .entity(new Wishlist()).build();
+        try {
+            String token = rest.viewToken();
+            LOG.debug(token);
+            Map<String, String> map = mapper.readValue(token, new TypeReference<Map<String, String>>() {
+            });
+            LOG.debug(map.toString());
+            String accessToken = map.get("access_token");
+            String result = rest.getByWishlistId(accessToken, wishlistId);
+            LOG.debug(result);
+            return Response.ok().entity(result).build();
+        } catch (IOException e) {
+            return Response.serverError().entity(e).build();
+        }
 	}
 
 	/* PUT /{wishlistId} */
 	@Override
 	public Response putByWishlistId(final YaasAwareParameters yaasAware, final java.lang.String wishlistId, final Wishlist wishlist)
 	{
-		// place some logic here
-		return Response.ok()
-			.build();
+        return Response.noContent().build();
 	}
 
 	/* DELETE /{wishlistId} */
@@ -94,8 +82,7 @@ public class DefaultWishlistsResource implements com.sample.wishlistDemo.api.gen
 	public Response deleteByWishlistId(final YaasAwareParameters yaasAware, final java.lang.String wishlistId)
 	{
 		// place some logic here
-		return Response.noContent()
-			.build();
+		return Response.noContent().build();
 	}
 
 	@Override
@@ -112,8 +99,18 @@ public class DefaultWishlistsResource implements com.sample.wishlistDemo.api.gen
 	public
 	Response postByWishlistIdWishlistItems(final YaasAwareParameters yaasAware,
 			final java.lang.String wishlistId, final WishlistItem wishlistItem){
-		// place some logic here
-		return Response.created(uriInfo.getAbsolutePath()).build();
+        try {
+            String token = rest.manageToken();
+            LOG.debug(token);
+            Map<String, String> map = mapper.readValue(token, new TypeReference<Map<String, String>>() {
+            });
+            LOG.debug(map.toString());
+            String accessToken = map.get("access_token");
+            String result = rest.addWishlistItem(wishlistId, mapper.writeValueAsString(wishlistItem), accessToken);
+            LOG.debug(result);
+            return Response.created(uriInfo.getAbsolutePath()).entity(result).build();
+        } catch (IOException e) {
+            return Response.serverError().entity(e).build();
+        }
 	}
-
 }

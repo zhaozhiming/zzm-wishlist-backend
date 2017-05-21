@@ -11,9 +11,14 @@
     },
     "price":
     {
-      "type":"integer",
+      "type":"number",
       "minimum":0,
       "default":1
+    },
+    "currency":
+    {
+      "type":"string",
+      "pattern":"^.+"
     },
     "note":
     {
@@ -25,5 +30,5 @@
       "format":"date-time"
     }
   },
-  "required":["product", "amount"]
+  "required":["product", "price", "currency"]
 }

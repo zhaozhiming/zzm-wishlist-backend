@@ -3,6 +3,7 @@ package com.sample.wishlistDemo.utils;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class RestClient {
@@ -17,7 +18,6 @@ public class RestClient {
     private static final String OAUTH2_TOKEN_API = "https://api.beta.yaas.io/hybris/oauth2/v1/token";
     private static final String TENNAT = "caashiring";
     private static final String DOCUMENT_SERVICE = "https://api.beta.yaas.io/hybris/document/v1";
-    private static final String server = "https://api.beta.yaas.io/hybris/oauth2/v1/";
     private static final String PREWLS = "prewishlists";
     private RestTemplate rest;
     private HttpHeaders headers;
@@ -51,17 +51,21 @@ public class RestClient {
         return token(SCOPE_MANAGE);
     }
 
-    public String foo(String token) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        headers.add("Accept", "*/*");
-        headers.add("Authorization", String.format("Bearer %s", token));
-        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
-        String url = String.format("%s/%s/%s", DOCUMENT_SERVICE, TENNAT, CLIENT_NAME);
-        LOG.debug(url);
-        ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.GET, requestEntity, String.class);
-        this.setStatus(responseEntity.getStatusCode());
-        return responseEntity.getBody();
+    public String getByWishlistId(String token, String wishlistId) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Type", "application/json");
+            headers.add("Accept", "*/*");
+            headers.add("Authorization", String.format("Bearer %s", token));
+            HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
+            String url = String.format("%s/%s/%s/data/%s/%s", DOCUMENT_SERVICE, TENNAT, CLIENT_NAME, PREWLS, wishlistId);
+            LOG.debug(url);
+            ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.GET, requestEntity, String.class);
+            this.setStatus(responseEntity.getStatusCode());
+            return responseEntity.getBody();
+        } catch (HttpClientErrorException e) {
+            return "{}";
+        }
     }
 
     public String createWishlist(String json, String token) {
@@ -71,6 +75,19 @@ public class RestClient {
         headers.add("Authorization", String.format("Bearer %s", token));
         HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
         String url = String.format("%s/%s/%s/data/%s", DOCUMENT_SERVICE, TENNAT, CLIENT_NAME, PREWLS);
+        LOG.debug(url);
+        ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        this.setStatus(responseEntity.getStatusCode());
+        return responseEntity.getBody();
+    }
+
+    public String addWishlistItem(String wishlistId, String json, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        headers.add("Accept", "*/*");
+        headers.add("Authorization", String.format("Bearer %s", token));
+        HttpEntity<String> requestEntity = new HttpEntity<>(json, headers);
+        String url = String.format("%s/%s/%s/data/%s/%s/items", DOCUMENT_SERVICE, TENNAT, CLIENT_NAME, PREWLS, wishlistId);
         LOG.debug(url);
         ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.POST, requestEntity, String.class);
         this.setStatus(responseEntity.getStatusCode());
