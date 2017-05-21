@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -90,9 +92,24 @@ public class DefaultWishlistsResource implements com.sample.wishlistDemo.api.gen
 	Response getByWishlistIdWishlistItems(
 			final YaasAwareParameters yaasAware,  final java.lang.String wishlistId)
 	{
-		// place some logic here
-		return Response.ok()
-                .entity(new java.util.ArrayList<WishlistItem>()).build();
+        try {
+            String token = rest.viewToken();
+            LOG.debug(token);
+            Map<String, String> map = mapper.readValue(token, new TypeReference<Map<String, String>>() {
+            });
+            LOG.debug(map.toString());
+            String accessToken = map.get("access_token");
+            String result = rest.getByWishlistId(accessToken, wishlistId);
+            LOG.debug(result);
+            Map<String, Object> wishlist = mapper.readValue(result, new TypeReference<Map<String, Object>>() {
+            });
+            double totalPrice = this.totalPrice(wishlist);
+            HashMap<String, Object> resp = new HashMap<>();
+            resp.put("totalPrice", totalPrice);
+            return Response.ok().entity(mapper.writeValueAsString(resp)).build();
+        } catch (IOException e) {
+            return Response.serverError().entity(e).build();
+        }
 	}
 
 	@Override
@@ -113,4 +130,14 @@ public class DefaultWishlistsResource implements com.sample.wishlistDemo.api.gen
             return Response.serverError().entity(e).build();
         }
 	}
+
+    private double totalPrice(Map<String, Object> wishlist) {
+        List<Map<String, Object>> items = (List<Map<String, Object>>) wishlist.get("items");
+        double totalPrice = 0;
+        for(Map<String, Object> item : items){
+            double price = (double) item.get("price");
+            totalPrice += price;
+        }
+        return totalPrice;
+    }
 }

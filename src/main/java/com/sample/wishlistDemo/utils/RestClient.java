@@ -20,14 +20,10 @@ public class RestClient {
     private static final String DOCUMENT_SERVICE = "https://api.beta.yaas.io/hybris/document/v1";
     private static final String PREWLS = "prewishlists";
     private RestTemplate rest;
-    private HttpHeaders headers;
     private HttpStatus status;
 
     public RestClient() {
         this.rest = new RestTemplate();
-        this.headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        headers.add("Accept", "*/*");
     }
 
     private String token(String scope) {
